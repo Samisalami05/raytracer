@@ -73,14 +73,14 @@ RayCollision sphere(vec3 pos, float radius, Ray ray) {
 	RayCollision col = miss();
 
 	// Make sure that its infront of the ray
-	if (vector < 0) return col;
+	if (vector < 0 && distance > radius) return col;
 
 	col.hit = d >= 0;
 
 	if (distance < radius) {
         col.distance = vector + sqrt(d);
         col.point = ray.pos + ray.dir * col.distance;
-        col.normal = -normalize(col.point - pos);
+        col.normal = normalize(col.point - pos);
     }
     else {
 		col.distance = vector - sqrt(d);
@@ -91,27 +91,54 @@ RayCollision sphere(vec3 pos, float radius, Ray ray) {
 	return col;
 }
 
-RayCollision raycast(Ray ray) {
-	RayCollision col1 = sphere(vec3(0, 0, 5), 1.0, ray);
-	RayCollision col2 = sphere(vec3(3, 2, 1), 2, ray);
+struct RayCastColl {
+	RayCollision raycol;
+	int id;
+};
 
-	if (col1.hit && col2.hit) return col1.distance < col2.distance ? col1 : col2;
-	else if (col1.hit) return col1;
-	else if (col2.hit) return col2;
-	return miss();
+RayCastColl raycast(Ray ray) {
+	RayCollision col1 = sphere(vec3(0, 0, 5), 1.0, ray);
+	RayCollision col2 = sphere(vec3(0.2, 0.1, 2.9), 1.0, ray);
+
+	if (col1.hit && col2.hit) return col1.distance < col2.distance ? RayCastColl(col1, 0) : RayCastColl(col2, 1);
+	else if (col1.hit) return RayCastColl(col1, 0);
+	else if (col2.hit) return RayCastColl(col2, 1);
+	return RayCastColl(miss(), -1);
+}
+
+float fresnel(vec3 rayDir, vec3 normal, float ior) {
+    float cosTheta = clamp(-dot(rayDir, normal), 0.0, 1.0);
+
+    float r0 = (1.0 - ior) / (1.0 + ior);
+    r0 *= r0;
+
+    return r0 + (1.0 - r0) * pow(1.0 - cosTheta, 5.0);
 }
 
 vec3 raytrace(Ray ray) {
     int bounces = 0;
 
-    while (bounces < 5) {
-        RayCollision col = raycast(ray);
+    while (bounces < 20) {
+        RayCastColl col = raycast(ray);
 
-        if (!col.hit)
+        if (!col.raycol.hit)
             return texture(skybox, ray.dir).rgb;
 
-        ray.dir = reflect(ray.dir, col.normal);
-        ray.pos = col.point + col.normal * 0.001;
+		if (col.id == 0) {
+			ray.dir = reflect(ray.dir, col.raycol.normal);
+			ray.pos = col.raycol.point + col.raycol.normal * 0.001;
+		}
+		else {
+			const float ior = 1.3;
+			if (dot(col.raycol.normal, ray.dir) > 0) { // outside
+				ray.dir = refract(ray.dir, -col.raycol.normal, ior / 1.0);
+				ray.pos = col.raycol.point + col.raycol.normal * 0.001;
+			}
+			else {
+				ray.dir = refract(ray.dir, col.raycol.normal, 1.0 / ior);
+				ray.pos = col.raycol.point - col.raycol.normal * 0.001;
+			}
+		}
 
         bounces++;
     }
