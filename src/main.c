@@ -1,7 +1,11 @@
+#include <bits/posix1_lim.h>
 #include <stdio.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "camera.h"
+#include "color.h"
+#include "fonts.h"
+#include "graphics.h"
 #include "log.h"
 #include "shader.h"
 #include "vec3.h"
@@ -9,6 +13,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image/stb_image.h>
+
 
 static float vertices[] = {
      1.0f,  1.0f, 0.0f, 1.0f, 1.0f,  // top right
@@ -104,9 +109,9 @@ unsigned int cubemap_init(const char** faces) {
 }
 
 int main(void) {
-	Window *window = InitWindow();
-	if (!window) return 1;
+	if (!InitWindow()) return 1;
 
+	
 	const char** faces = (const char*[]){
 		"assets/skybox/right.jpg",
 		"assets/skybox/left.jpg", 
@@ -165,23 +170,22 @@ int main(void) {
 				 GL_FLOAT, NULL);
 
 	glBindImageTexture(0, texture, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+	
 
-	float last = 0;
-	while (!WindowShouldClose(window)) {
-		float time = glfwGetTime();
-		float deltatime = time - last;
-		last = time;
+	Font font = {0};
+	if (!load_font(&font, "/usr/share/fonts/Adwaita/AdwaitaMono-Regular.ttf", 128)) return 1;
 
-		printf("\rfps: %.1f           ", 1 / deltatime);
+	while (!WindowShouldClose()) {
+		BeginFrame();
 
-		float speed = 4 * deltatime;
+		float speed = 4 * DeltaTime();
 
-		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) camera_move_forward(&cam, speed);
-		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) camera_move_forward(&cam, -speed);
-		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) camera_move_right(&cam, speed);
-		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) camera_move_right(&cam, -speed);
-		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) camera_move_up(&cam, speed);
-		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) camera_move_up(&cam, -speed);
+		if (glfwGetKey(window(), GLFW_KEY_W) == GLFW_PRESS) camera_move_forward(&cam, speed);
+		if (glfwGetKey(window(), GLFW_KEY_S) == GLFW_PRESS) camera_move_forward(&cam, -speed);
+		if (glfwGetKey(window(), GLFW_KEY_D) == GLFW_PRESS) camera_move_right(&cam, speed);
+		if (glfwGetKey(window(), GLFW_KEY_A) == GLFW_PRESS) camera_move_right(&cam, -speed);
+		if (glfwGetKey(window(), GLFW_KEY_SPACE) == GLFW_PRESS) camera_move_up(&cam, speed);
+		if (glfwGetKey(window(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) camera_move_up(&cam, -speed);
 
 
 
@@ -207,9 +211,18 @@ int main(void) {
 		glBindTexture(GL_TEXTURE_2D, texture);
 		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT, 0);
 
-		glfwSwapBuffers(window);
-		glfwPollEvents();
+		const float text_size = 40.0f;
+		const Color col = BLACK;
+
+		Vec3 forward = camera_forward(cam);
+
+		draw_text(font, col, vec2(0, 0), text_size, "FPS: %.1f, FrameTime: %.1f ms", 1 / DeltaTime(), DeltaTime() * 1000.0f);
+		draw_text(font, col, vec2(0, -text_size), text_size, "Time: %.3f", Time());
+		draw_text(font, col, vec2(0, -text_size * 2), text_size, "Cam-pos: [%.3f, %.3f, %.3f]", cam.pos.x, cam.pos.y, cam.pos.z);
+		draw_text(font, col, vec2(0, -text_size * 3), text_size, "Cam-dir: [%.3f, %.3f, %.3f]", forward.x, forward.y, forward.z);
+
+		EndFrame();
 	}
 
-	CloseWindow(window);
+	CloseWindow();
 }

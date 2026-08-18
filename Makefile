@@ -2,22 +2,36 @@ CC := gcc
 NAME := main
 SOURCEDIR := src
 BUILDDIR := build
-DEPSDIR := deps
+DEPS_DIR := deps
 
-CPPFLAGS := -Ideps -Ideps/glad/include
+CPPFLAGS := -Ideps -Ideps/glad/include -Ideps/freetype/include
 CFLAGS := -Wall -MMD -MP
-LDFLAGS :=
-LDLIBS := -lm -lglfw -lGL
+LDFLAGS := 
+LDLIBS := -lm -lglfw -lGL -lfreetype
 
 SRCS := $(shell find $(SOURCEDIR) -name '*.c')
 
 # Glad
-SRCS += $(DEPSDIR)/glad/glad.c
+SRCS += $(DEPS_DIR)/glad/glad.c
 
 OBJS := $(patsubst %.c,$(BUILDDIR)/%.o,$(SRCS))
 
+.PHONY: clean run help deps freetype
 
-$(NAME): $(OBJS)
+DEPS_BUILD_DIR := $(BUILDDIR)/deps
+DEPS_INSTALL_DIR := $(DEPS_DIR)/install
+
+all: $(NAME)
+
+deps: freetype
+	@mkdir -p $(DEPS_BUILD_DIR) $(DEPS_INSTALL_DIR)
+
+freetype:
+	cmake -S $(DEPS_DIR)/freetype -B $(DEPS_BUILD_DIR)/freetype
+	@mkdir -p $(DEPS_BUILD_DIR)/freetype
+	cmake --build $(DEPS_BUILD_DIR)/freetype
+
+$(NAME): deps $(OBJS)
 	$(CC) $(LDFLAGS) $(OBJS) -o $(NAME) $(LDLIBS)
 
 $(BUILDDIR)/%.o: %.c
@@ -25,7 +39,6 @@ $(BUILDDIR)/%.o: %.c
 	$(CC) $(CPPFLAGS) -c $(CFLAGS) $< -o $@
 
 
-.PHONY: clean run help
 
 help: # Show this help
 	@echo "Usage: make [TARGET]..."
