@@ -120,8 +120,8 @@ int main(void) {
 	unsigned int skybox = cubemap_init(faces);
 
 	ShaderModule mods[2];
-	mods[0] = LoadShader("vert.glsl", GL_VERTEX_SHADER);
-	mods[1] = LoadShader("frag.glsl", GL_FRAGMENT_SHADER);
+	mods[0] = LoadShader("assets/shaders/vert.glsl", GL_VERTEX_SHADER);
+	mods[1] = LoadShader("assets/shaders/frag.glsl", GL_FRAGMENT_SHADER);
 
 	Shader quad = shader_link(mods, 2);
 
@@ -151,7 +151,7 @@ int main(void) {
 	glUseProgram(quad.handle);
 	glBindVertexArray(vao);
 
-	ShaderModule compute = LoadShader("raytrace.glsl", GL_COMPUTE_SHADER);
+	ShaderModule compute = LoadShader("assets/shaders/raytrace.glsl", GL_COMPUTE_SHADER);
 	Shader raytrace = shader_link(&compute, 1);
 	
 	glGenTextures(1, &texture);
