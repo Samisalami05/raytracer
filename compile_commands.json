@@ -1,0 +1,121 @@
+[
+  {
+    "file": "src/camera.c",
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Ideps",
+      "-Ideps/glad/include",
+      "-c",
+      "-Wall",
+      "-MMD",
+      "-MP",
+      "src/camera.c",
+      "-o",
+      "build/src/camera.o"
+    ],
+    "directory": "/home/samisalami/Projects/raytrace",
+    "output": "build/src/camera.o"
+  },
+  {
+    "file": "src/main.c",
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Ideps",
+      "-Ideps/glad/include",
+      "-c",
+      "-Wall",
+      "-MMD",
+      "-MP",
+      "src/main.c",
+      "-o",
+      "build/src/main.o"
+    ],
+    "directory": "/home/samisalami/Projects/raytrace",
+    "output": "build/src/main.o"
+  },
+  {
+    "file": "src/shader.c",
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Ideps",
+      "-Ideps/glad/include",
+      "-c",
+      "-Wall",
+      "-MMD",
+      "-MP",
+      "src/shader.c",
+      "-o",
+      "build/src/shader.o"
+    ],
+    "directory": "/home/samisalami/Projects/raytrace",
+    "output": "build/src/shader.o"
+  },
+  {
+    "file": "src/vec3.c",
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Ideps",
+      "-Ideps/glad/include",
+      "-c",
+      "-Wall",
+      "-MMD",
+      "-MP",
+      "src/vec3.c",
+      "-o",
+      "build/src/vec3.o"
+    ],
+    "directory": "/home/samisalami/Projects/raytrace",
+    "output": "build/src/vec3.o"
+  },
+  {
+    "file": "src/window.c",
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Ideps",
+      "-Ideps/glad/include",
+      "-c",
+      "-Wall",
+      "-MMD",
+      "-MP",
+      "src/window.c",
+      "-o",
+      "build/src/window.o"
+    ],
+    "directory": "/home/samisalami/Projects/raytrace",
+    "output": "build/src/window.o"
+  },
+  {
+    "file": "src/vec2.c",
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Ideps",
+      "-Ideps/glad/include",
+      "-c",
+      "-Wall",
+      "-MMD",
+      "-MP",
+      "src/vec2.c",
+      "-o",
+      "build/src/vec2.o"
+    ],
+    "directory": "/home/samisalami/Projects/raytrace",
+    "output": "build/src/vec2.o"
+  },
+  {
+    "file": "deps/glad/glad.c",
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Ideps",
+      "-Ideps/glad/include",
+      "-c",
+      "-Wall",
+      "-MMD",
+      "-MP",
+      "deps/glad/glad.c",
+      "-o",
+      "build/deps/glad/glad.o"
+    ],
+    "directory": "/home/samisalami/Projects/raytrace",
+    "output": "build/deps/glad/glad.o"
+  }
+]
